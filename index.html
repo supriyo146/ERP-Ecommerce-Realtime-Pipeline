@@ -1,0 +1,262 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>Real-Time Data Pipeline</title>
+
+<style>
+body {
+  margin: 0;
+  font-family: 'Segoe UI', sans-serif;
+  background: #060b17;
+  color: #00e5ff;
+}
+
+/* HEADER */
+.header {
+  display: flex;
+  justify-content: space-between;
+  padding: 15px 30px;
+  border-bottom: 1px solid rgba(0,229,255,0.2);
+}
+
+.title {
+  font-size: 22px;
+  font-weight: bold;
+}
+
+/* METRICS */
+.metrics {
+  display: flex;
+  gap: 25px;
+}
+
+.metric span {
+  display: block;
+  font-size: 18px;
+  color: #00ffaa;
+}
+
+/* BLINKING LIVE */
+.live {
+  color: #00ff88;
+  animation: blink 1s infinite;
+}
+
+@keyframes blink {
+  50% { opacity: 0.3; }
+}
+
+/* GRID */
+.container {
+  padding: 30px;
+  background-image: radial-gradient(rgba(0,229,255,0.08) 1px, transparent 1px);
+  background-size: 20px 20px;
+}
+
+/* PIPELINE */
+.pipeline {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin: 40px 0;
+}
+
+/* NODE */
+.node {
+  padding: 20px;
+  border: 1px solid #00e5ff;
+  border-radius: 12px;
+  text-align: center;
+  min-width: 160px;
+  position: relative;
+  transition: 0.3s;
+}
+
+/* ACTIVE NODE */
+.node.active {
+  box-shadow: 0 0 20px #00ffaa, 0 0 40px rgba(0,255,170,0.5);
+  border-color: #00ffaa;
+}
+
+/* STATUS COLORS */
+.status {
+  font-size: 12px;
+}
+
+.running { color: yellow; }
+.success { color: #00ffaa; }
+.waiting { color: #aaa; }
+
+/* FLOW LINE */
+.line {
+  flex: 1;
+  height: 3px;
+  margin: 0 10px;
+  background: linear-gradient(90deg, transparent, #00e5ff, transparent);
+  position: relative;
+  overflow: hidden;
+}
+
+/* FLOW DOT */
+.line::before {
+  content: '';
+  position: absolute;
+  width: 40px;
+  height: 100%;
+  background: #00e5ff;
+  filter: blur(4px);
+  animation: flow 1.5s linear infinite;
+}
+
+@keyframes flow {
+  0% { left: -40px; }
+  100% { left: 100%; }
+}
+
+/* DASHBOARD */
+.chart-box {
+  border: 1px solid rgba(0,229,255,0.2);
+  border-radius: 10px;
+  padding: 10px;
+}
+
+iframe {
+  width: 100%;
+  height: 650px;
+  border: none;
+}
+
+/* FOOTER */
+.footer {
+  text-align: right;
+  margin-top: 10px;
+  color: #aaa;
+}
+
+</style>
+</head>
+
+<body>
+
+<!-- HEADER -->
+<div class="header">
+  <div class="title">Real-Time Data Pipeline Monitoring</div>
+
+  <div class="metrics">
+    <div class="metric">Events/sec <span id="events">12,000</span></div>
+    <div class="metric">Pipeline SLA <span>99.8%</span></div>
+    <div class="metric">Latency <span id="latency">38ms</span></div>
+    <div class="metric">Status <span class="live">● LIVE</span></div>
+  </div>
+</div>
+
+<div class="container">
+
+  <!-- PIPELINE -->
+  <div class="pipeline">
+
+    <div class="node" id="step1">
+      Github Actions<br><span class="status waiting">Waiting</span>
+    </div>
+
+    <div class="line"></div>
+
+    <div class="node" id="step2">
+      Python Script<br><span class="status waiting">Waiting</span>
+    </div>
+
+    <div class="line"></div>
+
+    <div class="node" id="step3">
+      Google Sheets<br><span class="status waiting">Waiting</span>
+    </div>
+
+    <div class="line"></div>
+
+    <div class="node" id="step4">
+      Looker Studio<br><span class="status waiting">Waiting</span>
+    </div>
+
+  </div>
+
+  <!-- DASHBOARD -->
+  <div class="chart-box">
+    <iframe src="https://datastudio.google.com/embed/reporting/77c1aa55-d75e-435d-a1f5-8c09b5f688f2/page/TlJ0C"></iframe>
+  </div>
+
+  <div class="footer" id="time"></div>
+
+</div>
+
+<script>
+
+/* CLOCK */
+function updateTime() {
+  document.getElementById("time").innerText =
+    "Last Updated: " + new Date().toLocaleString();
+}
+setInterval(updateTime, 1000);
+
+/* EVENTS ANIMATION */
+setInterval(() => {
+  let val = Math.floor(Math.random() * 5000) + 10000;
+  document.getElementById("events").innerText = val.toLocaleString();
+}, 2000);
+
+// Latency simulation (realistic variation)
+setInterval(() => {
+  let base = 35; // baseline latency
+  let variation = Math.random() * 15; // fluctuation
+  let latency = (base + variation).toFixed(0);
+
+  document.getElementById("latency").innerText = latency + " ms";
+
+}, 2000);
+
+/* PIPELINE FLOW */
+const steps = [
+  document.getElementById("step1"),
+  document.getElementById("step2"),
+  document.getElementById("step3"),
+  document.getElementById("step4")
+];
+
+function resetSteps() {
+  steps.forEach(step => {
+    step.classList.remove("active");
+    step.querySelector(".status").innerText = "Waiting";
+    step.querySelector(".status").className = "status waiting";
+  });
+}
+
+function runPipeline() {
+  resetSteps();
+
+  let delay = 0;
+
+  steps.forEach((step) => {
+    setTimeout(() => {
+      step.classList.add("active");
+      step.querySelector(".status").innerText = "Running";
+      step.querySelector(".status").className = "status running";
+
+      setTimeout(() => {
+        step.querySelector(".status").innerText = "Success";
+        step.querySelector(".status").className = "status success";
+      }, 1000);
+
+    }, delay);
+
+    delay += 1500;
+  });
+}
+
+/* LOOP */
+setInterval(runPipeline, 7000);
+runPipeline();
+
+</script>
+
+</body>
+</html>
