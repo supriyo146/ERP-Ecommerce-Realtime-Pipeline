@@ -43,4 +43,5 @@ It enables businesses to monitor operations live and take faster, data-driven de
 
 ![Dashboard Preview](dashboard.png)
 
-Live Dashboard: https://datastudio.google.com/s/lVZAwCKRXYg
+Live Dashboard: https://supriyo146.github.io/ERP-Ecommerce-Realtime-Pipeline/
+
