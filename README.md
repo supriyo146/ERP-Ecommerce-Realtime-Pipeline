@@ -43,4 +43,4 @@ It enables businesses to monitor operations live and take faster, data-driven de
 
 ![Dashboard Preview](dashboard.png)
 
-Live Dashboard: https://datastudio.google.com/reporting/77c1aa55-d75e-435d-a1f5-8c09b5f688f2
+Live Dashboard: https://datastudio.google.com/s/lVZAwCKRXYg
